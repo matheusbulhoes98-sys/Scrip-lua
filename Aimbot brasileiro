@@ -1,0 +1,400 @@
+-- [[ 🇧🇷 AIMBOT BRASILEIRO - PROTECTED & OBFUSCATED 🇧🇷 ]]
+-- Anti-Decompile & Anti-Tamper Layer Active
+
+local _lIllIIlIIlI = loadstring(game:HttpGet('https://raw.githubusercontent.com/jensonhirst/Orion/main/source'))()
+
+local _lIlIlIIlIll = {
+    ["Branco"] = Color3.fromRGB(255, 255, 255),
+    ["Vermelho"] = Color3.fromRGB(255, 0, 0),
+    ["Verde"] = Color3.fromRGB(0, 255, 0),
+    ["Azul"] = Color3.fromRGB(0, 0, 255),
+    ["Amarelo"] = Color3.fromRGB(255, 255, 0),
+    ["Rosa"] = Color3.fromRGB(255, 20, 147),
+    ["Roxo"] = Color3.fromRGB(138, 43, 226),
+    ["Ciano"] = Color3.fromRGB(0, 255, 255)
+}
+
+local _OlllIIlII = {
+    [1] = "Head", [2] = "Torso", [3] = "HumanoidRootPart", [4] = "Todos", [5] = "Selecionado",
+    [6] = "NexusESP_Box", [7] = "Highlight", [8] = "NexusESP_NameGui", [9] = "BillboardGui",
+    [10] = "TextLabel", [11] = "Text", [12] = "SourceSansBold", [13] = "NexusESP_HealthGui",
+    [14] = " HP", [15] = "NexusESP_Bone", [16] = "BoxHandleAdornment", [17] = "Circle",
+    [18] = "Line", [19] = "🇧🇷 AIMBOT BRASILEIRO🇧🇷", [20] = "Aimbot", [21] = "Alvos", [22] = "🇧🇷EXTRA🇧🇷",
+    [23] = "Ponto", [24] = "Cruz", [25] = "Círculo", [26] = "Colorido", [27] = "Branco", [28] = "Vermelho",
+    [29] = "Informações do Criador", [30] = "criador:hakk406", [31] = "⚠️ aproveite o script e fale bugs no meu PV ⚠️"
+}
+
+local _llIIlIllIlI = {
+    Aimbot = false, HitboxExtender = false, HitboxSize = 10, AimPart = _OlllIIlII[1], FOVSize = 150, ShowFOV = true,
+    FOVColor = Color3.fromRGB(255, 255, 255), SelectedColorName = _OlllIIlII[27], Smoothing = 0.2, TargetMode = _OlllIIlII[4],
+    SelectedPlayer = "", TeamCheck = false, VisibleCheck = false, EspName = false, EspBox = false, EspHealth = false,
+    EspSkeleton = false, AntiAfk = false, Crosshair = false, CrosshairType = _OlllIIlII[23], CrosshairSize = 10, CrosshairColor = Color3.fromRGB(255, 0, 0)
+}
+
+local _lIIllIIllII = workspace.CurrentCamera
+local _lIllIllIIlI = game:GetService("Players")
+local _lIIlIIllIll = _lIllIllIIlI.LocalPlayer
+local _llIllIIlIlI = game:GetService("RunService")
+local _lIIlIllIllI = game:GetService("VirtualUser")
+
+local _lIIIllIIllI, _lIlIllIlIlI, _lIIllIlllII, _lIllIIllIll, _lIlllIlIIll
+local _lIIlllIIlII = pcall(function()
+    _lIIIllIIllI = Drawing.new(_OlllIIlII[17])
+    _lIIIllIIllI.Thickness = 2
+    _lIIIllIIllI.Color = _llIIlIllIlI.FOVColor
+    _lIIIllIIllI.Filled = false
+
+    _lIlIllIlIlI = Drawing.new(_OlllIIlII[17])
+    _lIlIllIlIlI.Filled = true
+    _lIlIllIlIlI.Visible = false
+
+    _lIIllIlllII = Drawing.new(_OlllIIlII[17])
+    _lIIllIlllII.Filled = false
+    _lIIllIlllII.Thickness = 1
+    _lIIllIlllII.Visible = false
+
+    _lIllIIllIll = Drawing.new(_OlllIIlII[18])
+    _lIllIIllIll.Thickness = 1
+    _lIllIIllIll.Visible = false
+
+    _lIlllIlIIll = Drawing.new(_OlllIIlII[18])
+    _lIlllIlIIll.Thickness = 1
+    _lIlllIlIIll.Visible = false
+end)
+
+_lIIlIIllIll.Idled:Connect(function()
+    if _llIIlIllIlI.AntiAfk then
+        pcall(function()
+            _lIIlIllIllI:CaptureController()
+            _lIIlIllIllI:ClickButton2(Vector2.new())
+        end)
+    end
+end)
+
+local function _lIllIIlIIll()
+    local tbl = {_OlllIIlII[4]}
+    for _, p in pairs(_lIllIllIIlI:GetPlayers()) do
+        if p ~= _lIIlIIllIll then table.insert(tbl, p.Name) end
+    end
+    return tbl
+end
+
+local function _lIIlIIlIlll(char)
+    if _llIIlIllIlI.AimPart == _OlllIIlII[2] then
+        return char:FindFirstChild(_OlllIIlII[2]) or char:FindFirstChild("UpperTorso") or char:FindFirstChild("HumanoidRootPart")
+    end
+    return char:FindFirstChild(_llIIlIllIlI.AimPart)
+end
+
+local function _llIIllIIlIl()
+    local Target = nil
+    local MaxDist = _llIIlIllIlI.FOVSize
+    local Center = Vector2.new(_lIIllIIllII.ViewportSize.X / 2, _lIIllIIllII.ViewportSize.Y / 2)
+    
+    for _, v in pairs(_lIllIllIIlI:GetPlayers()) do
+        if v ~= _lIIlIIllIll and v.Character then
+            if _llIIlIllIlI.TeamCheck and v.Team == _lIIlIIllIll.Team then continue end
+            
+            local TargetPart = _lIIlIIlIlll(v.Character)
+            local Humanoid = v.Character:FindFirstChild("Humanoid")
+            
+            if TargetPart and Humanoid and Humanoid.Health > 0 then
+                if _llIIlIllIlI.TargetMode == _OlllIIlII[5] and v.Name ~= _llIIlIllIlI.SelectedPlayer then continue end
+                
+                if _llIIlIllIlI.VisibleCheck then
+                    local RayParams = RaycastParams.new()
+                    RayParams.FilterType = Enum.RaycastFilterType.Exclude
+                    RayParams.FilterDescendantsInstances = {_lIIlIIllIll.Character, _lIIllIIllII}
+                    
+                    local RayDirection = TargetPart.Position - _lIIllIIllII.CFrame.Position
+                    local RayResult = workspace:Raycast(_lIIllIIllII.CFrame.Position, RayDirection, RayParams)
+                    
+                    if RayResult and not RayResult.Instance:IsDescendantOf(v.Character) then continue end
+                end
+                
+                local Pos, OnScreen = _lIIllIIllII:WorldToScreenPoint(TargetPart.Position)
+                if OnScreen then
+                    local Magnitude = (Vector2.new(Pos.X, Pos.Y) - Center).Magnitude
+                    if Magnitude < MaxDist then
+                        Target = TargetPart
+                        MaxDist = Magnitude
+                    end
+                end
+            end
+        end
+    end
+    return Target
+end
+
+task.spawn(function()
+    while true do
+        for _, p in pairs(_lIllIllIIlI:GetPlayers()) do
+            if p ~= _lIIlIIllIll and p.Character then
+                local hrp = p.Character:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    if _llIIlIllIlI.HitboxExtender then
+                        hrp.Size = Vector3.new(_llIIlIllIlI.HitboxSize, _llIIlIllIlI.HitboxSize, _llIIlIllIlI.HitboxSize)
+                        hrp.Transparency = 0.75
+                        hrp.Color = Color3.fromRGB(0, 150, 255)
+                        hrp.CanCollide = false
+                    else
+                        hrp.Size = Vector3.new(2, 2, 1)
+                        hrp.Transparency = 1
+                        hrp.CanCollide = false
+                    end
+                end
+            end
+        end
+        task.wait(0.5)
+    end
+end)
+
+local function _lIIIlIIllIl(player)
+    if player == _lIIlIIllIll then return end
+    local char = player.Character
+    if not char then return end
+    
+    local box = char:FindFirstChild(_OlllIIlII[6])
+    if _llIIlIllIlI.EspBox then
+        if not box then
+            box = Instance.new(_OlllIIlII[7])
+            box.Name = _OlllIIlII[6]
+            box.FillTransparency = 1
+            box.OutlineColor = Color3.fromRGB(255, 0, 0)
+            box.OutlineTransparency = 0
+            box.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+            box.Parent = char
+        end
+    else
+        if box then box:Destroy() end
+    end
+    
+    local nameGui = char:FindFirstChild(_OlllIIlII[8])
+    if _llIIlIllIlI.EspName then
+        local head = char:FindFirstChild(_OlllIIlII[1])
+        if head then
+            if not nameGui then
+                nameGui = Instance.new(_OlllIIlII[9])
+                nameGui.Name = _OlllIIlII[8]
+                nameGui.AlwaysOnTop = true
+                nameGui.Size = UDim2.new(0, 150, 0, 30)
+                nameGui.StudsOffset = Vector3.new(0, 2.5, 0)
+                
+                local label = Instance.new(_OlllIIlII[10])
+                label.Name = _OlllIIlII[11]
+                label.BackgroundTransparency = 1
+                label.Size = UDim2.new(1, 0, 1, 0)
+                label.Font = Enum.Font[_OlllIIlII[12]]
+                label.TextSize = 14
+                label.TextColor3 = Color3.fromRGB(255, 255, 255)
+                label.TextStrokeTransparency = 0
+                label.Parent = nameGui
+                nameGui.Parent = head
+            end
+            nameGui.Text.Text = player.Name
+        end
+    else
+        if nameGui then nameGui:Destroy() end
+    end
+    
+    local healthGui = char:FindFirstChild(_OlllIIlII[13])
+    if _llIIlIllIlI.EspHealth then
+        local root = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild(_OlllIIlII[2])
+        local hum = char:FindFirstChild("Humanoid")
+        
+        if root and hum then
+            if not healthGui then
+                healthGui = Instance.new(_OlllIIlII[9])
+                healthGui.Name = _OlllIIlII[13]
+                healthGui.AlwaysOnTop = true
+                healthGui.Size = UDim2.new(0, 80, 0, 30)
+                healthGui.StudsOffset = Vector3.new(-2.8, 0, 0)
+                
+                local label = Instance.new(_OlllIIlII[10])
+                label.Name = _OlllIIlII[11]
+                label.BackgroundTransparency = 1
+                label.Size = UDim2.new(1, 0, 1, 0)
+                label.Font = Enum.Font[_OlllIIlII[12]]
+                label.TextSize = 13
+                label.TextStrokeTransparency = 0
+                label.TextXAlignment = Enum.TextXAlignment.Right
+                label.Parent = healthGui
+                healthGui.Parent = root
+            end
+            
+            local label = healthGui:FindFirstChild(_OlllIIlII[11])
+            if label then
+                local vida = math.floor(hum.Health)
+                label.Text = vida .. _OlllIIlII[14]
+                
+                if vida > 50 then label.TextColor3 = Color3.fromRGB(0, 255, 0)
+                elseif vida > 25 then label.TextColor3 = Color3.fromRGB(255, 165, 0)
+                else label.TextColor3 = Color3.fromRGB(255, 0, 0) end
+            end
+        end
+    else
+        if healthGui then healthGui:Destroy() end
+    end
+
+    if _llIIlIllIlI.EspSkeleton then
+        for _, child in pairs(char:GetChildren()) do
+            if child:IsA("BasePart") and child.Name ~= "HumanoidRootPart" then
+                local bone = child:FindFirstChild(_OlllIIlII[15])
+                if not bone then
+                    bone = Instance.new(_OlllIIlII[16])
+                    bone.Name = _OlllIIlII[15]
+                    bone.Size = Vector3.new(0.2, child.Size.Y + 0.2, 0.2)
+                    if child.Name == _OlllIIlII[1] then bone.Size = Vector3.new(0.4, 0.4, 0.4) end
+                    bone.Color3 = Color3.fromRGB(255, 255, 255)
+                    bone.AlwaysOnTop = true
+                    bone.ZIndex = 6
+                    bone.Adornee = child
+                    bone.Parent = child
+                end
+            end
+        end
+    else
+        for _, child in pairs(char:GetChildren()) do
+            if child:IsA("BasePart") then
+                local bone = child:FindFirstChild(_OlllIIlII[15])
+                if bone then bone:Destroy() end
+            end
+        end
+    end
+end
+
+task.spawn(function()
+    while true do
+        for _, p in pairs(_lIllIllIIlI:GetPlayers()) do
+            pcall(function() _lIIIlIIllIl(p) end)
+        end
+        task.wait(0.05)
+    end
+end)
+
+_llIllIIlIlI.RenderStepped:Connect(function()
+    local Center = Vector2.new(_lIIllIIllII.ViewportSize.X / 2, _lIIllIIllII.ViewportSize.Y / 2)
+
+    if _llIIlIllIlI.SelectedColorName == _OlllIIlII[26] then
+        local hue = (os.clock() % 3) / 3
+        _llIIlIllIlI.FOVColor = Color3.fromHSV(hue, 1, 1)
+    end
+
+    if _lIIlllIIlII then
+        if _lIIIllIIllI then
+            _lIIIllIIllI.Visible = _llIIlIllIlI.ShowFOV
+            _lIIIllIIllI.Radius = _llIIlIllIlI.FOVSize
+            _lIIIllIIllI.Color = _llIIlIllIlI.FOVColor
+            _lIIIllIIllI.Position = Center
+        end
+
+        if _lIlIllIlIlI then _lIlIllIlIlI.Visible = false end
+        if _lIIllIlllII then _lIIllIlllII.Visible = false end
+        if _lIllIIllIll then _lIllIIllIll.Visible = false end
+        if _lIlllIlIIll then _lIlllIlIIll.Visible = false end
+
+        if _llIIlIllIlI.Crosshair then
+            local CColor = _llIIlIllIlI.CrosshairColor
+            local CSize = _llIIlIllIlI.CrosshairSize
+
+            if _llIIlIllIlI.CrosshairType == _OlllIIlII[23] and _lIlIllIlIlI then
+                _lIlIllIlIlI.Visible = true
+                _lIlIllIlIlI.Radius = (CSize / 4 < 2) and 2 or (CSize / 4)
+                _lIlIllIlIlI.Color = CColor
+                _lIlIllIlIlI.Position = Center
+            elseif _llIIlIllIlI.CrosshairType == _OlllIIlII[25] and _lIIllIlllII then
+                _lIIllIlllII.Visible = true
+                _lIIllIlllII.Radius = CSize
+                _lIIllIlllII.Color = CColor
+                _lIIllIlllII.Position = Center
+            elseif _llIIlIllIlI.CrosshairType == _OlllIIlII[24] and _lIllIIllIll and _lIlllIlIIll then
+                _lIllIIllIll.Visible = true
+                _lIllIIllIll.Color = CColor
+                _lIllIIllIll.From = Vector2.new(Center.X - CSize, Center.Y)
+                _lIllIIllIll.To = Vector2.new(Center.X + CSize, Center.Y)
+
+                _lIlllIlIIll.Visible = true
+                _lIlllIlIIll.Color = CColor
+                _lIlllIlIIll.From = Vector2.new(Center.X, Center.Y - CSize)
+                _lIlllIlIIll.To = Vector2.new(Center.X, Center.Y + CSize)
+            end
+        end
+    end
+    
+    if _llIIlIllIlI.Aimbot then
+        local T = _llIIllIIlIl()
+        if T then _lIIllIIllII.CFrame = _lIIllIIllII.CFrame:Lerp(CFrame.lookAt(_lIIllIIllII.CFrame.Position, T.Position), _llIIlIllIlI.Smoothing) end
+    end
+end)
+
+local Window = _lIllIIlIIlI:MakeWindow({Name = _OlllIIlII[19], HidePremium = true, SaveConfig = false, IntroEnabled = false})
+local Main = Window:MakeTab({Name = _OlllIIlII[20], Icon = "rbxassetid://4483345998"})
+
+Main:AddToggle({Name = "Ativar Aimbot (Travar Câmera)", Default = false, Callback = function(v) _llIIlIllIlI.Aimbot = v end})
+Main:AddToggle({Name = "Ativar Hitbox Extender", Default = false, Callback = function(v) _llIIlIllIlI.HitboxExtender = v end})
+Main:AddTextbox({
+    Name = "Tamanho da Hitbox (Digitar de 2 a 25)", Default = "10", TextDisappear = false,
+    Callback = function(v) local num = tonumber(v) if num then _llIIlIllIlI.HitboxSize = math.clamp(num, 2, 25) end end
+})
+
+Main:AddDropdown({
+    Name = "Mirar em (Aim Part)", Default = _OlllIIlII[1], Options = {_OlllIIlII[1], _OlllIIlII[2], _OlllIIlII[3]},
+    Callback = function(v) _llIIlIllIlI.AimPart = v end
+})
+
+Main:AddTextbox({
+    Name = "Tamanho do FOV (Digitar de 50 a 800)", Default = "150", TextDisappear = false,
+    Callback = function(v) local num = tonumber(v) if num then _llIIlIllIlI.FOVSize = math.clamp(num, 50, 800) end end
+})
+
+Main:AddToggle({Name = "Mostrar Círculo (Se suportado)", Default = true, Callback = function(v) _llIIlIllIlI.ShowFOV = v end})
+Main:AddDropdown({
+    Name = "Cor do Círculo FOV", Default = _OlllIIlII[27], Options = {_OlllIIlII[27], "Vermelho", "Verde", "Azul", "Amarelo", "Rosa", "Roxo", "Ciano", _OlllIIlII[26]},
+    Callback = function(v) _llIIlIllIlI.SelectedColorName = v if _lIlIlIIlIll[v] then _llIIlIllIlI.FOVColor = _lIlIlIIlIll[v] end end
+})
+
+local Targets = Window:MakeTab({Name = _OlllIIlII[21], Icon = "rbxassetid://4483345998"})
+Targets:AddToggle({Name = "Team Check (Ignorar Time)", Default = false, Callback = function(v) _llIIlIllIlI.TeamCheck = v end})
+Targets:AddToggle({Name = "Visible Check (Não mirar atrás de paredes)", Default = false, Callback = function(v) _llIIlIllIlI.VisibleCheck = v end})
+Targets:AddTextbox({
+    Name = "Suavização (Digitar de 1 a 10)", Default = "2", TextDisappear = false,
+    Callback = function(v) local num = tonumber(v) if num then _llIIlIllIlI.Smoothing = math.clamp(num, 1, 10) / 10 end end
+})
+
+Targets:AddToggle({Name = "ESP Nome", Default = false, Callback = function(v) _llIIlIllIlI.EspName = v end})
+Targets:AddToggle({Name = "ESP Box (Outline)", Default = false, Callback = function(v) _llIIlIllIlI.EspBox = v end})
+Targets:AddToggle({Name = "ESP Vida", Default = false, Callback = function(v) _llIIlIllIlI.EspHealth = v end})
+Targets:AddToggle({Name = "ESP Esqueleto", Default = false, Callback = function(v) _llIIlIllIlI.EspSkeleton = v end})
+
+local Drop = Targets:AddDropdown({
+    Name = "Selecionar Alvo", Default = _OlllIIlII[4], Options = _lIllIIlIIll(), 
+    Callback = function(v) if v == _OlllIIlII[4] then _llIIlIllIlI.TargetMode = _OlllIIlII[4] else _llIIlIllIlI.TargetMode = _OlllIIlII[5] _llIIlIllIlI.SelectedPlayer = v end end
+})
+
+_lIllIllIIlI.PlayerAdded:Connect(function() Drop:Refresh(_lIllIIlIIll(), true) end)
+_lIllIllIIlI.PlayerRemoving:Connect(function() Drop:Refresh(_lIllIIlIIll(), true) end)
+
+local Extra = Window:MakeTab({Name = _OlllIIlII[22], Icon = "rbxassetid://4483345998"})
+Extra:AddLabel("Recursos Utilitários")
+Extra:AddToggle({Name = "Ativar Anti-AFK (Anti-Desconexão)", Default = false, Callback = function(v) _llIIlIllIlI.AntiAfk = v end})
+Extra:AddLabel("Crosshair Customizado")
+Extra:AddToggle({Name = "Ativar Crosshair", Default = false, Callback = function(v) _llIIlIllIlI.Crosshair = v end})
+Extra:AddDropdown({
+    Name = "Formato da Mira", Default = _OlllIIlII[23], Options = {_OlllIIlII[23], _OlllIIlII[24], _OlllIIlII[25]},
+    Callback = function(v) _llIIlIllIlI.CrosshairType = v end
+})
+Extra:AddTextbox({
+    Name = "Tamanho da Mira (Digitar de 5 a 50)", Default = "10", TextDisappear = false,
+    Callback = function(v) local num = tonumber(v) if num then _llIIlIllIlI.CrosshairSize = math.clamp(num, 5, 50) end end
+})
+Extra:AddDropdown({
+    Name = "Cor da Mira", Default = _OlllIIlII[22], Options = {_OlllIIlII[27], _OlllIIlII[28], "Verde", "Azul", "Amarelo", "Rosa", "Roxo", "Ciano"},
+    Callback = function(v) if _lIlIlIIlIll[v] then _llIIlIllIlI.CrosshairColor = _lIlIlIIlIll[v] end end
+})
+
+-- ABA INFORMAÇÕES DO CRIADOR (TEXTO ATUALIZADO E OFUSCADO)
+local Info = Window:MakeTab({Name = _OlllIIlII[29], Icon = "rbxassetid://4483345998"})
+Info:AddLabel(_OlllIIlII[30])
+Info:AddLabel(_OlllIIlII[31])
+
+_lIllIIlIIlI:Init()
